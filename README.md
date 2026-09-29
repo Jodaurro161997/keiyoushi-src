@@ -9,7 +9,7 @@ Repositorio propio de extensiones de manga en español para Aniyomi / Mihon, com
 **Más → Ajustes → Navegar → Repositorios de extensiones → Agregar**
 
 ```
-https://raw.githubusercontent.com/Jodaurro161997/extensiones-manga/repo/index.pb
+https://raw.githubusercontent.com/Jodaurro161997/keiyoushi-src/repo/index.pb
 ```
 
 Huella SHA-256 de la firma:

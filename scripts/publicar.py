@@ -19,7 +19,7 @@ sys.path.insert(0, str(source_dir / ".github/scripts"))
 import index_pb2  # noqa: E402
 from google.protobuf import json_format  # noqa: E402
 
-REPO = os.environ.get("GITHUB_REPOSITORY", "Jodaurro161997/extensiones-manga")
+REPO = os.environ.get("GITHUB_REPOSITORY", "Jodaurro161997/keiyoushi-src")
 BASE_URL = f"https://raw.githubusercontent.com/{REPO}/repo"
 ICON_BASE_URL = "https://cdn.jsdelivr.net/gh/keiyoushi/extensions-source@main"
 ICON_FILE = "res/mipmap-xhdpi/ic_launcher.png"
