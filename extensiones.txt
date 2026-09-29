@@ -1,0 +1,23 @@
+# Extensiones de keiyoushi/extensions-source que se compilan y publican.
+# Una por línea como <idioma>/<carpeta> (la carpeta dentro de src/). "#" = comentario.
+
+# Las que usa la biblioteca
+es/olympusscanlation
+es/emperorscan
+es/leercapitulo
+
+# Catálogos grandes en español
+es/manhwaweb
+es/ikigaimangas
+es/inmanga
+es/zonatmoorgunoriginal
+es/mangatv
+es/lectorjpg
+es/eternalmangas
+es/mangacrab
+es/lectormonline
+es/mangasnosekai
+es/bokugentranslation
+es/dragontranslationorg
+es/taurusfansub
+es/ragnarokscanlation

@@ -1,0 +1,90 @@
+name: Compilar y publicar
+
+on:
+  schedule:
+    # Días 1 y 16 de cada mes (cada ~15 días)
+    - cron: "0 9 1,16 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publicar
+  cancel-in-progress: false
+
+env:
+  SIGNING_KEY_SHA256: 28b116d978a783bdf76a59674cf71b7e1a235057b270fc2a82759baf2c51bddd
+
+jobs:
+  compilar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Descargar este repositorio
+        uses: actions/checkout@v5
+        with:
+          path: config
+
+      - name: Elegir extensiones
+        id: modulos
+        run: |
+          grep -v '^\s*#' config/extensiones.txt | awk 'NF {print $1}' > modulos.txt
+          cat modulos.txt
+          {
+            echo "sparse<<EOF"
+            echo '/*'
+            echo '!/src/*'
+            sed 's#^#/src/#; s#$#/#' modulos.txt
+            echo EOF
+            echo "tareas=$(sed 's#^#:src:#; s#/#:#g; s#$#:assembleRelease#' modulos.txt | tr '\n' ' ')"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Descargar keiyoushi/extensions-source
+        uses: actions/checkout@v5
+        with:
+          repository: keiyoushi/extensions-source
+          path: fuente
+          sparse-checkout-cone-mode: false
+          sparse-checkout: ${{ steps.modulos.outputs.sparse }}
+
+      - name: Aplicar parches de PRs pendientes
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python config/scripts/aplicar_parches.py config/parches.txt fuente
+
+      - uses: actions/setup-java@v5
+        with:
+          java-version: 25
+          distribution: temurin
+
+      - uses: gradle/actions/setup-gradle@v5
+
+      - name: Compilar
+        working-directory: fuente
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          ALIAS: ${{ secrets.ALIAS }}
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          echo "$SIGNING_KEY" | base64 -d > signingkey.jks
+          # --continue: si una extensión no compila, se publican las demás
+          ./gradlew --continue ${{ steps.modulos.outputs.tareas }} \
+            || echo "::warning::Alguna extensión no compiló; revisa el log de este paso"
+          rm signingkey.jks
+
+      - name: Generar índice
+        run: |
+          pip install protobuf
+          python config/scripts/publicar.py fuente salida
+
+      - name: Publicar en la rama repo
+        working-directory: salida
+        run: |
+          git init -q -b repo
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -q -m "Extensiones compiladas de keiyoushi/extensions-source@$(git -C ../fuente rev-parse --short HEAD)"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" repo

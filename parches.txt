@@ -1,0 +1,5 @@
+# Pull requests de keiyoushi/extensions-source que todavía no están fusionados
+# y se aplican antes de compilar. Uno por línea: <número>  # comentario
+# Cuando upstream fusiona o cierra el PR, se omite solo y se puede borrar de aquí.
+
+19422  # LeerCapitulo: nuevo diseño de leercapitulo.co (búsqueda 404, lector)
