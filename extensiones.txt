@@ -5,6 +5,10 @@
 es/olympusscanlation
 es/emperorscan
 es/leercapitulo
+es/gremorymangas
+es/hadesnofansub
+es/heavenmanga
+es/manhuaonline
 
 # Catálogos grandes en español
 es/manhwaweb
